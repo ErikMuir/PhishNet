@@ -1,4 +1,4 @@
-namespace PhishNetApiV5Wrapper.Requests;
+namespace PhishNet.Requests;
 
 public interface IResourceRequest
 {

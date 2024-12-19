@@ -1,4 +1,4 @@
-namespace PhishNetApiV5Wrapper;
+namespace PhishNet;
 
 public enum QueryableColumn
 {

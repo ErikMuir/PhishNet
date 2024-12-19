@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PhishNetApiV5Wrapper\PhishNetApiV5Wrapper.csproj" />
+    <ProjectReference Include="..\PhishNet\PhishNet.csproj" />
   </ItemGroup>
 
   <ItemGroup>

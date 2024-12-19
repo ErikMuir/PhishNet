@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PhishNetApiV5Wrapper.Models;
+namespace PhishNet.Models;
 
 public class Venue : IPhishNetApiResource
 {

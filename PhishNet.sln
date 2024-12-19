@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhishNetApiV5Wrapper", "PhishNetApiV5Wrapper\PhishNetApiV5Wrapper.csproj", "{464D306A-00A3-4927-A932-F7146DD7B277}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhishNet", "PhishNet\PhishNet.csproj", "{464D306A-00A3-4927-A932-F7146DD7B277}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{E06AC187-C005-4A17-96C8-9F5E7CA11896}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhishNet.Console", "PhishNet.Console\PhishNet.Console.csproj", "{E06AC187-C005-4A17-96C8-9F5E7CA11896}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

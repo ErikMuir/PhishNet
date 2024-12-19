@@ -1,3 +1,3 @@
-namespace PhishNetApiV5Wrapper.Models;
+namespace PhishNet.Models;
 
 public interface IPhishNetApiResource { }

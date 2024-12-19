@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
-using PhishNetApiV5Wrapper.Models;
-using PhishNetApiV5Wrapper.Requests;
+using PhishNet.Models;
+using PhishNet.Requests;
 using System.Text.Json;
 
-namespace PhishNetApiV5Wrapper;
+namespace PhishNet;
 
 public class PhishNetApiClient
 {

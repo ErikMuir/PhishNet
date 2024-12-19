@@ -1,7 +1,6 @@
-using PhishNetApiV5Wrapper;
 using System.Text.Json;
 
-namespace ConsoleApp;
+namespace PhishNet.Console;
 
 public class App
 {
@@ -259,6 +258,6 @@ public class App
 
     private static void Log(string message)
     {
-        Console.WriteLine(message);
+        System.Console.WriteLine(message);
     }
 }
