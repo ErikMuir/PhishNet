@@ -1,8 +1,8 @@
 using System.Text.Json.Serialization;
 
-namespace PhishNetApiV5Wrapper.Model;
+namespace PhishNetApiV5Wrapper.Models;
 
-public class Song
+public class Song : IPhishNetApiResource
 {
     [JsonPropertyName("songid")]
     public int Id { get; set; }
@@ -10,16 +10,20 @@ public class Song
     [JsonPropertyName("song")]
     public string Name { get; set; }
 
+    [JsonPropertyName("slug")]
     public string Slug { get; set; }
 
+    [JsonPropertyName("abbr")]
     public string Abbr { get; set; }
 
+    [JsonPropertyName("artist")]
     public string Artist { get; set; }
 
-    public DateOnly Debut { get; set; }
+    [JsonPropertyName("debut")]
+    public string Debut { get; set; }
 
     [JsonPropertyName("last_played")]
-    public DateOnly LastPlayed { get; set; }
+    public string LastPlayed { get; set; }
 
     [JsonPropertyName("times_played")]
     public int TimesPlayed { get; set; }
@@ -30,5 +34,6 @@ public class Song
     [JsonPropertyName("debut_permalink")]
     public Uri DebutPermalink { get; set; }
 
+    [JsonPropertyName("gap")]
     public int Gap { get; set; }
 }

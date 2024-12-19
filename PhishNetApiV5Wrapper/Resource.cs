@@ -1,14 +1,12 @@
-using System.Runtime.Serialization;
-
 namespace PhishNetApiV5Wrapper;
 
-public enum Resources
+public enum Resource
 {
     Artists,
     Attendance,
     JamCharts,
     Reviews,
-    SetLists,
+    Setlists,
     Shows,
     SongData,
     Songs,
