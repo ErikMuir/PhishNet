@@ -39,14 +39,14 @@ public class App
 
     public async Task Run()
     {
+        if (_showHelp)
+        {
+            Log(Help);
+            return;
+        }
+
         try
         {
-            if (_showHelp)
-            {
-                Log(Help);
-                return;
-            }
-
             var result = _resource switch
             {
                 "artists" => await Artists(),

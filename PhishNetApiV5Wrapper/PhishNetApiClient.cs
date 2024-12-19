@@ -119,16 +119,22 @@ public class PhishNetApiClient
 
     #region Setlists
 
-    public async Task<Setlist> GetSetlistByShowIdAsync(long showId, CancellationToken ct = new())
+    public Task<List<SetlistItem>> GetSongPerformancesAsync(string songSlug, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowId, showId);
-        return (Setlist) await QueryResourcesAsync<SongPerformance>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.Slug, songSlug);
+        return QueryResourcesAsync<SetlistItem>(request, new Dictionary<string, string>(), ct);
     }
 
-    public async Task<Setlist> GetSetlistByShowDateAsync(DateOnly showDate, CancellationToken ct = new())
+    public Task<List<SetlistItem>> GetSetlistByShowIdAsync(long showId, CancellationToken ct = new())
+    {
+        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowId, showId);
+        return QueryResourcesAsync<SetlistItem>(request, new Dictionary<string, string>(), ct);
+    }
+
+    public Task<List<SetlistItem>> GetSetlistByShowDateAsync(DateOnly showDate, CancellationToken ct = new())
     {
         var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowDate, showDate);
-        return (Setlist) await QueryResourcesAsync<SongPerformance>(request, new Dictionary<string, string>(), ct);
+        return QueryResourcesAsync<SetlistItem>(request, new Dictionary<string, string>(), ct);
     }
 
     #endregion
@@ -177,16 +183,6 @@ public class PhishNetApiClient
     {
         var request = new GetResourceByIdRequest(Resource.SongData, songId);
         return GetResourceByIdAsync<SongData>(request, new Dictionary<string, string>(), ct);
-    }
-
-    #endregion
-
-    #region SongPerformances
-
-    public Task<List<SongPerformance>> GetSongPerformancesAsync(string songSlug, CancellationToken ct = new())
-    {
-        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.Slug, songSlug);
-        return QueryResourcesAsync<SongPerformance>(request, new Dictionary<string, string>(), ct);
     }
 
     #endregion

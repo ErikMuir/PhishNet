@@ -33,5 +33,11 @@ public class QueryResourcesRequest : IResourceRequest
 
     public object Value { get; }
 
-    public string Path => $"{Resource}/{Column}/{Value}".ToLower();
+    private string ValueString => Column switch
+    {
+        QueryableColumn.ShowDate => ((DateOnly)Value).ToString("yyyy-MM-dd"),
+        _ => Value.ToString(),
+    };
+
+    public string Path => $"{Resource}/{Column}/{ValueString}".ToLower();
 }
