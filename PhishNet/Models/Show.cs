@@ -26,7 +26,7 @@ public class Show : IPhishNetApiResource
     public int ExcludeFromStats { get; set; }
 
     [JsonPropertyName("venueid")]
-    public int VenueId { get; set; }
+    public int? VenueId { get; set; }
 
     [JsonPropertyName("setlist_notes")]
     public string SetlistNotes { get; set; }
@@ -44,13 +44,13 @@ public class Show : IPhishNetApiResource
     public string Country { get; set; }
 
     [JsonPropertyName("artistid")]
-    public int ArtistId { get; set; }
+    public int? ArtistId { get; set; }
 
     [JsonPropertyName("artist_name")]
     public string ArtistName { get; set; }
 
     [JsonPropertyName("tourid")]
-    public int TourId { get; set; }
+    public int? TourId { get; set; }
 
     [JsonPropertyName("tour_name")]
     public string TourName { get; set; }
