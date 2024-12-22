@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using PhishNet.Models;
+﻿using PhishNet.Models;
 using PhishNet.Requests;
+using System.Net;
 using System.Text.Json;
 
 namespace PhishNet;
@@ -25,248 +25,243 @@ public class PhishNetApiClient
 
     #region Artists
 
-    public Task<List<Artist>> GetArtistsAsync(CancellationToken ct = new())
+    public Task<List<Artist>> GetArtistsAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourcesRequest(Resource.Artists);
-        return GetResourcesAsync<Artist>(request, new Dictionary<string, string>(), ct);
+        var request = new AllResourcesRequest(Resource.Artists, queryParams);
+        return GetResourcesAsync<Artist>(request, ct);
     }
 
-    public Task<Artist> GetArtistByIdAsync(int artistId, CancellationToken ct = new())
+    public Task<Artist> GetArtistByIdAsync(int artistId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourceByIdRequest(Resource.Artists, artistId);
-        return GetResourceByIdAsync<Artist>(request, new Dictionary<string, string>(), ct);
+        var request = new ResourceByIdRequest(Resource.Artists, artistId, queryParams);
+        return GetResourceByIdAsync<Artist>(request, ct);
     }
 
     #endregion
 
     #region Attendance
 
-    public Task<List<Attendance>> GetAttendanceByUserIdAsync(long userId, CancellationToken ct = new())
+    public Task<List<Attendance>> GetAttendanceByUserIdAsync(long userId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.Uid, userId);
-        return QueryResourcesAsync<Attendance>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.Uid, userId, queryParams);
+        return QueryResourcesAsync<Attendance>(request, ct);
     }
 
-    public Task<List<Attendance>> GetAttendanceByUsernameAsync(string username, CancellationToken ct = new())
+    public Task<List<Attendance>> GetAttendanceByUsernameAsync(string username, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.Username, username);
-        return QueryResourcesAsync<Attendance>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.Username, username, queryParams);
+        return QueryResourcesAsync<Attendance>(request, ct);
     }
 
-    public Task<List<Attendance>> GetAttendanceByShowIdAsync(long showId, CancellationToken ct = new())
+    public Task<List<Attendance>> GetAttendanceByShowIdAsync(long showId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.ShowId, showId);
-        return QueryResourcesAsync<Attendance>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.ShowId, showId, queryParams);
+        return QueryResourcesAsync<Attendance>(request, ct);
     }
 
-    public Task<List<Attendance>> GetAttendanceByShowDateAsync(DateOnly showDate, CancellationToken ct = new())
+    public Task<List<Attendance>> GetAttendanceByShowDateAsync(DateOnly showDate, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.ShowDate, showDate);
-        return QueryResourcesAsync<Attendance>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Attendance, QueryableColumn.ShowDate, showDate, queryParams);
+        return QueryResourcesAsync<Attendance>(request, ct);
     }
 
     #endregion
 
     #region JamCharts
 
-    public Task<List<JamChart>> GetJamChartsBySongAsync(string songSlug, CancellationToken ct = new())
+    public Task<List<JamChart>> GetJamChartsBySongAsync(string songSlug, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.JamCharts, QueryableColumn.Slug, songSlug);
-        return QueryResourcesAsync<JamChart>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.JamCharts, QueryableColumn.Slug, songSlug, queryParams);
+        return QueryResourcesAsync<JamChart>(request, ct);
     }
 
-    public Task<List<JamChart>> GetJamChartsByShowIdAsync(long showId, CancellationToken ct = new())
+    public Task<List<JamChart>> GetJamChartsByShowIdAsync(long showId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.JamCharts, QueryableColumn.ShowId, showId);
-        return QueryResourcesAsync<JamChart>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.JamCharts, QueryableColumn.ShowId, showId, queryParams);
+        return QueryResourcesAsync<JamChart>(request, ct);
     }
 
-    public Task<List<JamChart>> GetJamChartsByShowDateAsync(DateOnly showDate, CancellationToken ct = new())
+    public Task<List<JamChart>> GetJamChartsByShowDateAsync(DateOnly showDate, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.JamCharts, QueryableColumn.ShowDate, showDate);
-        return QueryResourcesAsync<JamChart>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.JamCharts, QueryableColumn.ShowDate, showDate, queryParams);
+        return QueryResourcesAsync<JamChart>(request, ct);
     }
 
     #endregion
 
     #region Reviews
 
-    public Task<List<Review>> GetReviewsByUserIdAsync(long userId, CancellationToken ct = new())
+    public Task<List<Review>> GetReviewsByUserIdAsync(long userId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.Uid, userId);
-        return QueryResourcesAsync<Review>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.Uid, userId, queryParams);
+        return QueryResourcesAsync<Review>(request, ct);
     }
 
-    public Task<List<Review>> GetReviewsByUsernameAsync(string username, CancellationToken ct = new())
+    public Task<List<Review>> GetReviewsByUsernameAsync(string username, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.Username, username);
-        return QueryResourcesAsync<Review>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.Username, username, queryParams);
+        return QueryResourcesAsync<Review>(request, ct);
     }
 
-    public Task<List<Review>> GetReviewsByShowIdAsync(long showId, CancellationToken ct = new())
+    public Task<List<Review>> GetReviewsByShowIdAsync(long showId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.ShowId, showId);
-        return QueryResourcesAsync<Review>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.ShowId, showId, queryParams);
+        return QueryResourcesAsync<Review>(request, ct);
     }
 
-    public Task<List<Review>> GetReviewsByShowDateAsync(DateOnly showDate, CancellationToken ct = new())
+    public Task<List<Review>> GetReviewsByShowDateAsync(DateOnly showDate, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.ShowDate, showDate);
-        return QueryResourcesAsync<Review>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Reviews, QueryableColumn.ShowDate, showDate, queryParams);
+        return QueryResourcesAsync<Review>(request, ct);
     }
 
     #endregion
 
     #region Setlists
 
-    public Task<List<SetlistItem>> GetSongPerformancesAsync(string songSlug, CancellationToken ct = new())
+    public Task<List<SetlistItem>> GetSongPerformancesAsync(string songSlug, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.Slug, songSlug);
-        return QueryResourcesAsync<SetlistItem>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.Slug, songSlug, queryParams);
+        return QueryResourcesAsync<SetlistItem>(request, ct);
     }
 
-    public Task<List<SetlistItem>> GetSetlistByShowIdAsync(long showId, CancellationToken ct = new())
+    public Task<List<SetlistItem>> GetSetlistByShowIdAsync(long showId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowId, showId);
-        return QueryResourcesAsync<SetlistItem>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowId, showId, queryParams);
+        return QueryResourcesAsync<SetlistItem>(request, ct);
     }
 
-    public Task<List<SetlistItem>> GetSetlistByShowDateAsync(DateOnly showDate, CancellationToken ct = new())
+    public Task<List<SetlistItem>> GetSetlistByShowDateAsync(DateOnly showDate, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowDate, showDate);
-        return QueryResourcesAsync<SetlistItem>(request, new Dictionary<string, string>(), ct);
+        var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowDate, showDate, queryParams);
+        return QueryResourcesAsync<SetlistItem>(request, ct);
     }
 
     #endregion
 
     #region Shows
 
-    public Task<List<Show>> GetShowsAsync(CancellationToken ct = new())
+    public Task<List<Show>> GetShowsAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourcesRequest(Resource.Shows);
-        return GetResourcesAsync<Show>(request, new Dictionary<string, string>(), ct);
+        var request = new AllResourcesRequest(Resource.Shows, queryParams);
+        return GetResourcesAsync<Show>(request, ct);
     }
 
     public Task<Show> GetShowByIdAsync(long showId, CancellationToken ct = new())
     {
-        var request = new GetResourceByIdRequest(Resource.Shows, showId);
-        return GetResourceByIdAsync<Show>(request, new Dictionary<string, string>(), ct);
+        var request = new ResourceByIdRequest(Resource.Shows, showId);
+        return GetResourceByIdAsync<Show>(request, ct);
     }
 
     #endregion
 
     #region Songs
 
-    public Task<List<Song>> GetSongsAsync(CancellationToken ct = new())
+    public Task<List<Song>> GetSongsAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourcesRequest(Resource.Songs);
-        return GetResourcesAsync<Song>(request, new Dictionary<string, string>(), ct);
+        var request = new AllResourcesRequest(Resource.Songs, queryParams);
+        return GetResourcesAsync<Song>(request, ct);
     }
 
-    public Task<Song> GetSongByIdAsync(int songId, CancellationToken ct = new())
+    public Task<Song> GetSongByIdAsync(int songId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourceByIdRequest(Resource.Songs, songId);
-        return GetResourceByIdAsync<Song>(request, new Dictionary<string, string>(), ct);
+        var request = new ResourceByIdRequest(Resource.Songs, songId, queryParams);
+        return GetResourceByIdAsync<Song>(request, ct);
     }
 
     #endregion
 
     #region SongData
 
-    public Task<List<SongData>> GetSongDataAsync(CancellationToken ct = new())
+    public Task<List<SongData>> GetSongDataAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourcesRequest(Resource.SongData);
-        return GetResourcesAsync<SongData>(request, new Dictionary<string, string>(), ct);
+        var request = new AllResourcesRequest(Resource.SongData, queryParams);
+        return GetResourcesAsync<SongData>(request, ct);
     }
 
-    public Task<SongData> GetSongDataByIdAsync(int songId, CancellationToken ct = new())
+    public Task<SongData> GetSongDataByIdAsync(int songId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourceByIdRequest(Resource.SongData, songId);
-        return GetResourceByIdAsync<SongData>(request, new Dictionary<string, string>(), ct);
+        var request = new ResourceByIdRequest(Resource.SongData, songId, queryParams);
+        return GetResourceByIdAsync<SongData>(request, ct);
     }
 
     #endregion
 
     #region Users
 
-    public async Task<User> GetUserByIdAsync(long userId, CancellationToken ct = new())
+    public async Task<User> GetUserByIdAsync(long userId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Users, QueryableColumn.Uid, userId);
-        return (await QueryResourcesAsync<User>(request, new Dictionary<string, string>(), ct)).FirstOrDefault();
+        var request = new QueryResourcesRequest(Resource.Users, QueryableColumn.Uid, userId, queryParams);
+        return (await QueryResourcesAsync<User>(request, ct)).FirstOrDefault();
     }
 
-    public async Task<User> GetUserByUsernameAsync(string username, CancellationToken ct = new())
+    public async Task<User> GetUserByUsernameAsync(string username, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new QueryResourcesRequest(Resource.Users, QueryableColumn.Username, username);
-        return (await QueryResourcesAsync<User>(request, new Dictionary<string, string>(), ct)).FirstOrDefault();
+        var request = new QueryResourcesRequest(Resource.Users, QueryableColumn.Username, username, queryParams);
+        return (await QueryResourcesAsync<User>(request, ct)).FirstOrDefault();
     }
 
     #endregion
 
     #region Venues
 
-    public Task<List<Venue>> GetVenuesAsync(CancellationToken ct = new())
+    public Task<List<Venue>> GetVenuesAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourcesRequest(Resource.Venues);
-        return GetResourcesAsync<Venue>(request, new Dictionary<string, string>(), ct);
+        var request = new AllResourcesRequest(Resource.Venues, queryParams);
+        return GetResourcesAsync<Venue>(request, ct);
     }
 
-    public Task<Venue> GetVenueByIdAsync(int id, CancellationToken ct = new())
+    public Task<Venue> GetVenueByIdAsync(int venueId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
-        var request = new GetResourceByIdRequest(Resource.Venues, id);
-        return GetResourceByIdAsync<Venue>(request, new Dictionary<string, string>(), ct);
+        var request = new ResourceByIdRequest(Resource.Venues, venueId, queryParams);
+        return GetResourceByIdAsync<Venue>(request, ct);
     }
 
     #endregion
 
     public Task<List<T>> GetResourcesAsync<T>(
-        GetResourcesRequest request,
-        Dictionary<string, string> queryParams,
+        AllResourcesRequest request,
         CancellationToken ct = new())
         where T : IPhishNetApiResource
-        => GetListAsync<T>(request.Path, queryParams, ct);
+        => GetListAsync<T>(request, ct);
 
     public async Task<T> GetResourceByIdAsync<T>(
-        GetResourceByIdRequest request,
-        Dictionary<string, string> queryParams,
+        ResourceByIdRequest request,
         CancellationToken ct = new())
         where T : IPhishNetApiResource
-        => (await GetListAsync<T>(request.Path, queryParams, ct)).FirstOrDefault();
+        => (await GetListAsync<T>(request, ct)).FirstOrDefault();
 
     public Task<List<T>> QueryResourcesAsync<T>(
-        QueryResourcesRequest resourcesRequest,
-        Dictionary<string, string> queryParams,
+        QueryResourcesRequest request,
         CancellationToken ct = new())
         where T : IPhishNetApiResource
-        => GetListAsync<T>(resourcesRequest.Path, queryParams, ct);
+        => GetListAsync<T>(request, ct);
 
     private async Task<List<T>> GetListAsync<T>(
-        string url,
-        Dictionary<string, string> queryParams,
+        ResourceRequest resourceRequest,
         CancellationToken ct = new())
         where T : IPhishNetApiResource
     {
         try
         {
-            url = $"{_config.BaseUrl}/{url}.{_config.Format}";
-            Log($"GET {url}");
+            var httpRequest = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = resourceRequest.GetRequestUri(_config) };
 
-            queryParams ??= new Dictionary<string, string>();
-            queryParams.TryAdd("apikey", _config.ApiKey);
-
-            var requestUri = new Uri(QueryHelpers.AddQueryString(url, queryParams));
-            var request = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = requestUri };
-
-            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, ct);
-            if (!response.IsSuccessStatusCode) throw new PhishNetApiException(response.ReasonPhrase);
+            var response = await _httpClient.SendAsync(httpRequest, HttpCompletionOption.ResponseContentRead, ct);
+            switch (response.StatusCode)
+            {
+                case < HttpStatusCode.BadRequest:
+                    break;
+                case HttpStatusCode.NotFound:
+                    return [];
+                default:
+                    throw new PhishNetApiException(response.ReasonPhrase);
+            }
 
             var content = await response.Content.ReadAsStringAsync(ct);
             var dataResponse = JsonSerializer.Deserialize<DataResponse<T>>(content);
             if (dataResponse is null) throw new PhishNetApiException("Failed to deserialize response.");
 
             if (dataResponse.IsError) throw new PhishNetApiException($"{dataResponse.ErrorMessage} (ErrorCode: {dataResponse.ErrorCode})");
-
-            Log($"Retrieved {dataResponse.Data.Count} record(s).");
 
             return dataResponse.Data;
         }
@@ -278,11 +273,5 @@ public class PhishNetApiClient
         {
             throw new PhishNetApiException("Unexpected exception occurred.", ex);
         }
-    }
-
-    private void Log(string message)
-    {
-        if (_config.LogsEnabled)
-            Console.WriteLine(message);
     }
 }

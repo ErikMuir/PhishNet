@@ -1,8 +1,8 @@
 namespace PhishNet.Requests;
 
-public class QueryResourcesRequest : IResourceRequest
+public class QueryResourcesRequest : ResourceRequest
 {
-    public QueryResourcesRequest(Resource resource, QueryableColumn column, object value)
+    public QueryResourcesRequest(Resource resource, QueryableColumn column, object value, PhishNetApiQueryParams queryParams = null) : base(resource, queryParams)
     {
         Resource[] supportedResources =
         [
@@ -14,7 +14,7 @@ public class QueryResourcesRequest : IResourceRequest
         ];
         if (!supportedResources.Contains(resource))
             throw new PhishNetApiException($"QueryRequest does not support resource '{resource}'.");
-        Resource = resource;
+
         Column = column;
         Value = column switch
         {
@@ -27,8 +27,6 @@ public class QueryResourcesRequest : IResourceRequest
         };
     }
 
-    public Resource Resource { get; }
-
     public QueryableColumn Column { get; }
 
     public object Value { get; }
@@ -39,5 +37,5 @@ public class QueryResourcesRequest : IResourceRequest
         _ => Value.ToString(),
     };
 
-    public string Path => $"{Resource}/{Column}/{ValueString}".ToLower();
+    public override string Path => $"{Resource}/{Column}/{ValueString}".ToLower();
 }

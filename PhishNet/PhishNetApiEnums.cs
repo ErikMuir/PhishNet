@@ -13,3 +13,18 @@ public enum Resource
     Users,
     Venues,
 }
+
+public enum QueryableColumn
+{
+    Uid,
+    Username,
+    ShowId,
+    ShowDate,
+    Slug,
+}
+
+public enum SortDirection
+{
+    Asc,
+    Desc,
+}

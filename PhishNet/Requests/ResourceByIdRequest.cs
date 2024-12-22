@@ -1,8 +1,8 @@
 namespace PhishNet.Requests;
 
-public class GetResourceByIdRequest : IResourceRequest
+public class ResourceByIdRequest : ResourceRequest
 {
-    public GetResourceByIdRequest(Resource resource, long id)
+    public ResourceByIdRequest(Resource resource, long id, PhishNetApiQueryParams queryParams = null) : base(resource, queryParams)
     {
         Resource[] supportedResources =
         [
@@ -14,13 +14,11 @@ public class GetResourceByIdRequest : IResourceRequest
         ];
         if (!supportedResources.Contains(resource))
             throw new PhishNetApiException($"GetByIdRequest does not support resource '{resource}'.");
-        Resource = resource;
+
         Id = id;
     }
 
-    public Resource Resource { get; }
-
     public long Id { get; }
 
-    public string Path => $"{Resource}/{Id}".ToLower();
+    public override string Path => $"{Resource}/{Id}".ToLower();
 }

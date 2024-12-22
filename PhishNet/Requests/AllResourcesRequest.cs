@@ -1,8 +1,8 @@
 namespace PhishNet.Requests;
 
-public class GetResourcesRequest : IResourceRequest
+public class AllResourcesRequest : ResourceRequest
 {
-    public GetResourcesRequest(Resource resource)
+    public AllResourcesRequest(Resource resource, PhishNetApiQueryParams queryParams = null) : base(resource, queryParams)
     {
         Resource[] supportedResources =
         [
@@ -14,10 +14,7 @@ public class GetResourcesRequest : IResourceRequest
         ];
         if (!supportedResources.Contains(resource))
             throw new PhishNetApiException($"GetAllRequest does not support resource '{resource}'.");
-        Resource = resource;
     }
 
-    public Resource Resource { get; }
-
-    public string Path => $"{Resource}".ToLower();
+    public override string Path => $"{Resource}".ToLower();
 }

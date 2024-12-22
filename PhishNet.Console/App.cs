@@ -4,7 +4,7 @@ namespace PhishNet.Console;
 
 public class App
 {
-    private readonly string? _resource;
+    private readonly string _resource;
     private readonly string[] _queryOptions;
     private readonly bool _showHelp;
     private readonly PhishNetApiClient _apiClient;
@@ -29,11 +29,11 @@ public class App
         _resource = args.FirstOrDefault();
         _queryOptions = args.Skip(1).ToArray();
         _showHelp = args.Contains("-h") || args.Contains("--help");
-        _apiClient = new PhishNetApiClient(new PhishNetApiClientConfig { LogsEnabled = true });
+        _apiClient = new PhishNetApiClient();
         _serializerOptions = new JsonSerializerOptions { WriteIndented = true };
 
         if (string.IsNullOrWhiteSpace(_resource))
-            throw new ValidationException("Missing required resource.");
+            throw new PhishNetConsoleException("Missing required resource.");
     }
 
     public async Task Run()
@@ -58,12 +58,12 @@ public class App
                 "setlists" => await Setlists(),
                 "users" => await Users(),
                 "venues" => await Venues(),
-                _ => throw new ValidationException($"Invalid resource '{_resource}'.")
+                _ => throw new PhishNetConsoleException($"Invalid resource '{_resource}'.")
             };
 
-            Log(JsonSerializer.Serialize(result, _serializerOptions));
+            Log(result != null ? JsonSerializer.Serialize(result, _serializerOptions) : "No results found.");
         }
-        catch (ValidationException e)
+        catch (PhishNetConsoleException e)
         {
             Log($"Error: {e.Message}\nUse 'dotnet run -- --help' for a list of available resources and options.");
         }
@@ -81,7 +81,7 @@ public class App
             return await _apiClient.GetArtistsAsync();
 
         if (!int.TryParse(_queryOptions[0], out var id))
-            throw new ValidationException($"Invalid artist ID '{_queryOptions[0]}'.");
+            throw new PhishNetConsoleException($"Invalid artist ID '{_queryOptions[0]}'.");
 
         return await _apiClient.GetArtistByIdAsync(id);
     }
@@ -89,37 +89,37 @@ public class App
     private async Task<object> Attendance()
     {
         if (_queryOptions.Length < 1)
-            throw new ValidationException("Missing required query column.");
+            throw new PhishNetConsoleException("Missing required query column.");
         if (_queryOptions.Length < 2)
-            throw new ValidationException("Missing required query value.");
+            throw new PhishNetConsoleException("Missing required query value.");
 
         switch (_queryOptions[0])
         {
             case "uid":
                 if (!int.TryParse(_queryOptions[1], out var userId))
-                    throw new ValidationException($"Invalid user ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid user ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetAttendanceByUserIdAsync(userId);
             case "username":
                 return await _apiClient.GetAttendanceByUsernameAsync(_queryOptions[1]);
             case "showid":
                 if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new ValidationException($"Invalid show ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetAttendanceByShowIdAsync(showId);
             case "showdate":
                 if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new ValidationException($"Invalid show date '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
                 return await _apiClient.GetAttendanceByShowDateAsync(showDate);
             default:
-                throw new ValidationException($"Invalid query column '{_queryOptions[0]}'.");
+                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
         }
     }
 
     private async Task<object> JamCharts()
     {
         if (_queryOptions.Length < 1)
-            throw new ValidationException("Missing required query column.");
+            throw new PhishNetConsoleException("Missing required query column.");
         if (_queryOptions.Length < 2)
-            throw new ValidationException("Missing required query value.");
+            throw new PhishNetConsoleException("Missing required query value.");
 
         switch (_queryOptions[0])
         {
@@ -127,51 +127,51 @@ public class App
                 return await _apiClient.GetJamChartsBySongAsync(_queryOptions[1]);
             case "showid":
                 if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new ValidationException($"Invalid show ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetJamChartsByShowIdAsync(showId);
             case "showdate":
                 if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new ValidationException($"Invalid show date '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
                 return await _apiClient.GetJamChartsByShowDateAsync(showDate);
             default:
-                throw new ValidationException($"Invalid query column '{_queryOptions[0]}'.");
+                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
         }
     }
 
     private async Task<object> Reviews()
     {
         if (_queryOptions.Length < 1)
-            throw new ValidationException("Missing required query column.");
+            throw new PhishNetConsoleException("Missing required query column.");
         if (_queryOptions.Length < 2)
-            throw new ValidationException("Missing required query value.");
+            throw new PhishNetConsoleException("Missing required query value.");
 
         switch (_queryOptions[0])
         {
             case "uid":
                 if (!int.TryParse(_queryOptions[1], out var userId))
-                    throw new ValidationException($"Invalid user ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid user ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetReviewsByUserIdAsync(userId);
             case "username":
                 return await _apiClient.GetReviewsByUsernameAsync(_queryOptions[1]);
             case "showid":
                 if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new ValidationException($"Invalid show ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetReviewsByShowIdAsync(showId);
             case "showdate":
                 if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new ValidationException($"Invalid show date '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
                 return await _apiClient.GetReviewsByShowDateAsync(showDate);
             default:
-                throw new ValidationException($"Invalid query column '{_queryOptions[0]}'.");
+                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
         }
     }
 
     private async Task<object> Setlists()
     {
         if (_queryOptions.Length < 1)
-            throw new ValidationException("Missing required query column.");
+            throw new PhishNetConsoleException("Missing required query column.");
         if (_queryOptions.Length < 2)
-            throw new ValidationException("Missing required query value.");
+            throw new PhishNetConsoleException("Missing required query value.");
 
         switch (_queryOptions[0])
         {
@@ -179,14 +179,14 @@ public class App
                 return await _apiClient.GetSongPerformancesAsync(_queryOptions[1]);
             case "showid":
                 if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new ValidationException($"Invalid show ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetSetlistByShowIdAsync(showId);
             case "showdate":
                 if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new ValidationException($"Invalid show date '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
                 return await _apiClient.GetSetlistByShowDateAsync(showDate);
             default:
-                throw new ValidationException($"Invalid query column '{_queryOptions[0]}'.");
+                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
         }
     }
 
@@ -196,7 +196,7 @@ public class App
             return await _apiClient.GetShowsAsync();
 
         if (!long.TryParse(_queryOptions[0], out var showId))
-            throw new ValidationException($"Invalid show ID '{_queryOptions[0]}'.");
+            throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[0]}'.");
 
         return await _apiClient.GetShowByIdAsync(showId);
     }
@@ -207,7 +207,7 @@ public class App
             return await _apiClient.GetSongsAsync();
 
         if (!int.TryParse(_queryOptions[0], out var songId))
-            throw new ValidationException($"Invalid song ID '{_queryOptions[0]}'.");
+            throw new PhishNetConsoleException($"Invalid song ID '{_queryOptions[0]}'.");
 
         return await _apiClient.GetSongByIdAsync(songId);
     }
@@ -218,7 +218,7 @@ public class App
             return await _apiClient.GetSongDataAsync();
 
         if (!int.TryParse(_queryOptions[0], out var songId))
-            throw new ValidationException($"Invalid song ID '{_queryOptions[0]}'.");
+            throw new PhishNetConsoleException($"Invalid song ID '{_queryOptions[0]}'.");
 
         return await _apiClient.GetSongDataByIdAsync(songId);
     }
@@ -226,20 +226,20 @@ public class App
     private async Task<object> Users()
     {
         if (_queryOptions.Length < 1)
-            throw new ValidationException("Missing required query column.");
+            throw new PhishNetConsoleException("Missing required query column.");
         if (_queryOptions.Length < 2)
-            throw new ValidationException("Missing required query value.");
+            throw new PhishNetConsoleException("Missing required query value.");
 
         switch (_queryOptions[0])
         {
             case "uid":
                 if (!long.TryParse(_queryOptions[1], out var userId))
-                    throw new ValidationException($"Invalid show ID '{_queryOptions[1]}'.");
+                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
                 return await _apiClient.GetUserByIdAsync(userId);
             case "username":
                 return await _apiClient.GetUserByUsernameAsync(_queryOptions[1]);
             default:
-                throw new ValidationException($"Invalid query column '{_queryOptions[0]}'.");
+                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
         }
     }
 
@@ -249,7 +249,7 @@ public class App
             return await _apiClient.GetVenuesAsync();
 
         if (!int.TryParse(_queryOptions[0], out var id))
-            throw new ValidationException($"Invalid venue ID '{_queryOptions[0]}'.");
+            throw new PhishNetConsoleException($"Invalid venue ID '{_queryOptions[0]}'.");
 
         return await _apiClient.GetVenueByIdAsync(id);
     }
