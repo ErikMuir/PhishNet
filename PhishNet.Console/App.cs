@@ -1,5 +1,4 @@
 using System.Text.Json;
-using PhishNet.Models;
 
 namespace PhishNet.Console;
 
@@ -10,7 +9,7 @@ public class App
     private readonly bool _showHelp;
     private readonly PhishNetApiClient _apiClient;
     private readonly JsonSerializerOptions _serializerOptions;
-    private readonly Cache<PhishNetData> _cache;
+    private readonly Cache _cache;
     private const string Help = """
         Usage:  dotnet run <resource> [id | <column> <value>]
         Resources:
@@ -33,7 +32,7 @@ public class App
         _showHelp = args.Contains("-h") || args.Contains("--help");
         _apiClient = new PhishNetApiClient();
         _serializerOptions = new JsonSerializerOptions { WriteIndented = true };
-        _cache = new Cache<PhishNetData>();
+        _cache = new Cache();
 
         if (string.IsNullOrWhiteSpace(_resource))
             throw new PhishNetConsoleException("Missing required resource.");
@@ -84,30 +83,23 @@ public class App
 
     private async Task<object> Artists()
     {
-        if (_cache.Data.Artists.Count == 0)
-        {
-            _cache.Data.Artists = await _apiClient.GetArtistsAsync();
-            _cache.Save();
-        }
+        var isAll = _queryOptions.Length == 0;
+        var cacheKey = isAll ? "all" : _queryOptions[0];
 
-        if (_queryOptions.Length == 0)
-            return _cache.Data.Artists;
+        if (_cache.Artists.Data.TryGetValue(cacheKey, out var artists))
+            return isAll ? artists : artists.SingleOrDefault();
+
+        if (isAll)
+        {
+            artists = await _apiClient.GetArtistsAsync();
+            _cache.Artists.Data.Add(cacheKey, artists);
+            return artists;
+        }
 
         if (!int.TryParse(_queryOptions[0], out var id))
             throw new PhishNetConsoleException($"Invalid artist ID '{_queryOptions[0]}'.");
-
-        var artist = _cache.Data.Artists.SingleOrDefault(a => a.Id == id);
-
-        if (artist == null)
-        {
-            artist = await _apiClient.GetArtistByIdAsync(id);
-            if (artist != null)
-            {
-                _cache.Data.Artists.Add(artist);
-                _cache.Save();
-            }
-        }
-
+        var artist = await _apiClient.GetArtistByIdAsync(id);
+        _cache.Artists.Data.Add(cacheKey, [artist]);
         return artist;
     }
 
@@ -118,56 +110,21 @@ public class App
         if (_queryOptions.Length < 2)
             throw new PhishNetConsoleException("Missing required query value.");
 
-        List<Attendance> attendances;
+        var cacheKey = $"{_queryOptions[0]}:{_queryOptions[1]}";
 
-        switch (_queryOptions[0])
+        if (_cache.Attendances.Data.TryGetValue(cacheKey, out var attendances))
+            return attendances;
+
+        attendances = _queryOptions[0] switch
         {
-            case "uid":
-                if (!int.TryParse(_queryOptions[1], out var userId))
-                    throw new PhishNetConsoleException($"Invalid user ID '{_queryOptions[1]}'.");
-                attendances = _cache.Data.Attendances.Where(a => a.UserId == userId).ToList();
-                if (attendances.Count == 0)
-                {
-                    attendances = await _apiClient.GetAttendanceByUserIdAsync(userId);
-                    _cache.Data.Attendances.AddRange(attendances);
-                    _cache.Save();
-                }
-                break;
-            case "username":
-                var username = _queryOptions[1];
-                attendances = _cache.Data.Attendances.Where(a => a.Username == username).ToList();
-                if (attendances.Count == 0)
-                {
-                    attendances = await _apiClient.GetAttendanceByUsernameAsync(username);
-                    _cache.Data.Attendances.AddRange(attendances);
-                    _cache.Save();
-                }
-                break;
-            case "showid":
-                if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
-                attendances = _cache.Data.Attendances.Where(a => a.ShowId == showId).ToList();
-                if (attendances.Count == 0)
-                {
-                    attendances = await _apiClient.GetAttendanceByShowIdAsync(showId);
-                    _cache.Data.Attendances.AddRange(attendances);
-                    _cache.Save();
-                }
-                break;
-            case "showdate":
-                if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
-                attendances = _cache.Data.Attendances.Where(a => a.ShowDate.ToDateOnly() == showDate).ToList();
-                if (attendances.Count == 0)
-                {
-                    attendances = await _apiClient.GetAttendanceByShowDateAsync(showDate);
-                    _cache.Data.Attendances.AddRange(attendances);
-                    _cache.Save();
-                }
-                break;
-            default:
-                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
-        }
+            "uid" => await _apiClient.GetAttendanceByUserIdAsync(int.Parse(_queryOptions[1])),
+            "username" => await _apiClient.GetAttendanceByUsernameAsync(_queryOptions[1]),
+            "showid" => await _apiClient.GetAttendanceByShowIdAsync(long.Parse(_queryOptions[1])),
+            "showdate" => await _apiClient.GetAttendanceByShowDateAsync(DateOnly.Parse(_queryOptions[1])),
+            _ => throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.")
+        };
+
+        _cache.Attendances.Data.Add(cacheKey, attendances);
 
         return attendances;
     }
@@ -179,45 +136,20 @@ public class App
         if (_queryOptions.Length < 2)
             throw new PhishNetConsoleException("Missing required query value.");
 
-        List<JamChart> jamCharts;
+        var cacheKey = $"{_queryOptions[0]}:{_queryOptions[1]}";
 
-        switch (_queryOptions[0])
+        if (_cache.JamCharts.Data.TryGetValue(cacheKey, out var jamCharts))
+            return jamCharts;
+
+        jamCharts = _queryOptions[0] switch
         {
-            case "slug":
-                var songSlug = _queryOptions[1];
-                jamCharts = _cache.Data.JamCharts.Where(j => j.Slug == songSlug).ToList();
-                if (jamCharts.Count == 0)
-                {
-                    jamCharts = await _apiClient.GetJamChartsBySongAsync(songSlug);
-                    _cache.Data.JamCharts.AddRange(jamCharts);
-                    _cache.Save();
-                }
-                break;
-            case "showid":
-                if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
-                jamCharts = _cache.Data.JamCharts.Where(j => j.ShowId == showId).ToList();
-                if (jamCharts.Count == 0)
-                {
-                    jamCharts = await _apiClient.GetJamChartsByShowIdAsync(showId);
-                    _cache.Data.JamCharts.AddRange(jamCharts);
-                    _cache.Save();
-                }
-                break;
-            case "showdate":
-                if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
-                jamCharts = _cache.Data.JamCharts.Where(j => j.ShowDate.ToDateOnly() == showDate).ToList();
-                if (jamCharts.Count == 0)
-                {
-                    jamCharts = await _apiClient.GetJamChartsByShowDateAsync(showDate);
-                    _cache.Data.JamCharts.AddRange(jamCharts);
-                    _cache.Save();
-                }
-                break;
-            default:
-                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
-        }
+            "slug" => await _apiClient.GetJamChartsBySongAsync(_queryOptions[1]),
+            "showid" => await _apiClient.GetJamChartsByShowIdAsync(long.Parse(_queryOptions[1])),
+            "showdate" => await _apiClient.GetJamChartsByShowDateAsync(DateOnly.Parse(_queryOptions[1])),
+            _ => throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.")
+        };
+
+        _cache.JamCharts.Data.Add(cacheKey, jamCharts);
 
         return jamCharts;
     }
@@ -229,56 +161,21 @@ public class App
         if (_queryOptions.Length < 2)
             throw new PhishNetConsoleException("Missing required query value.");
 
-        List<Review> reviews;
+        var cacheKey = $"{_queryOptions[0]}:{_queryOptions[1]}";
 
-        switch (_queryOptions[0])
+        if (_cache.Reviews.Data.TryGetValue(cacheKey, out var reviews))
+            return reviews;
+
+        reviews = _queryOptions[0] switch
         {
-            case "uid":
-                if (!int.TryParse(_queryOptions[1], out var userId))
-                    throw new PhishNetConsoleException($"Invalid user ID '{_queryOptions[1]}'.");
-                reviews = _cache.Data.Reviews.Where(a => a.UserId == userId).ToList();
-                if (reviews.Count == 0)
-                {
-                    reviews = await _apiClient.GetReviewsByUserIdAsync(userId);
-                    _cache.Data.Reviews.AddRange(reviews);
-                    _cache.Save();
-                }
-                break;
-            case "username":
-                var username = _queryOptions[1];
-                reviews = _cache.Data.Reviews.Where(a => a.Username == username).ToList();
-                if (reviews.Count == 0)
-                {
-                    reviews = await _apiClient.GetReviewsByUsernameAsync(username);
-                    _cache.Data.Reviews.AddRange(reviews);
-                    _cache.Save();
-                }
-                break;
-            case "showid":
-                if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
-                reviews = _cache.Data.Reviews.Where(a => a.ShowId == showId).ToList();
-                if (reviews.Count == 0)
-                {
-                    reviews = await _apiClient.GetReviewsByShowIdAsync(showId);
-                    _cache.Data.Reviews.AddRange(reviews);
-                    _cache.Save();
-                }
-                break;
-            case "showdate":
-                if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
-                reviews = _cache.Data.Reviews.Where(a => a.ShowDate.ToDateOnly() == showDate).ToList();
-                if (reviews.Count == 0)
-                {
-                    reviews = await _apiClient.GetReviewsByShowDateAsync(showDate);
-                    _cache.Data.Reviews.AddRange(reviews);
-                    _cache.Save();
-                }
-                break;
-            default:
-                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
-        }
+            "uid" => await _apiClient.GetReviewsByUserIdAsync(int.Parse(_queryOptions[1])),
+            "username" => await _apiClient.GetReviewsByUsernameAsync(_queryOptions[1]),
+            "showid" => await _apiClient.GetReviewsByShowIdAsync(long.Parse(_queryOptions[1])),
+            "showdate" => await _apiClient.GetReviewsByShowDateAsync(DateOnly.Parse(_queryOptions[1])),
+            _ => throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.")
+        };
+
+        _cache.Reviews.Data.Add(cacheKey, reviews);
 
         return reviews;
     }
@@ -290,133 +187,87 @@ public class App
         if (_queryOptions.Length < 2)
             throw new PhishNetConsoleException("Missing required query value.");
 
-        List<SetlistItem> setlistItems;
+        var cacheKey = $"{_queryOptions[0]}:{_queryOptions[1]}";
 
-        switch (_queryOptions[0])
+        if (_cache.SetlistItems.Data.TryGetValue(cacheKey, out var setlistItems))
+            return setlistItems;
+
+        setlistItems = _queryOptions[0] switch
         {
-            case "slug":
-                var songSlug = _queryOptions[1];
-                setlistItems = _cache.Data.SetlistItems.Where(j => j.Slug == songSlug).ToList();
-                if (setlistItems.Count == 0)
-                {
-                    setlistItems = await _apiClient.GetSongPerformancesAsync(songSlug);
-                    _cache.Data.SetlistItems.AddRange(setlistItems);
-                    _cache.Save();
-                }
-                break;
-            case "showid":
-                if (!long.TryParse(_queryOptions[1], out var showId))
-                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
-                setlistItems = _cache.Data.SetlistItems.Where(j => j.ShowId == showId).ToList();
-                if (setlistItems.Count == 0)
-                {
-                    setlistItems = await _apiClient.GetSetlistByShowIdAsync(showId);
-                    _cache.Data.SetlistItems.AddRange(setlistItems);
-                    _cache.Save();
-                }
-                break;
-            case "showdate":
-                if (!DateOnly.TryParse(_queryOptions[1], out var showDate))
-                    throw new PhishNetConsoleException($"Invalid show date '{_queryOptions[1]}'.");
-                setlistItems = _cache.Data.SetlistItems.Where(j => j.ShowDate.ToDateOnly() == showDate).ToList();
-                if (setlistItems.Count == 0)
-                {
-                    setlistItems = await _apiClient.GetSetlistByShowDateAsync(showDate);
-                    _cache.Data.SetlistItems.AddRange(setlistItems);
-                    _cache.Save();
-                }
-                break;
-            default:
-                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
-        }
+            "slug" => await _apiClient.GetSongPerformancesAsync(_queryOptions[1]),
+            "showid" => await _apiClient.GetSetlistByShowIdAsync(long.Parse(_queryOptions[1])),
+            "showdate" => await _apiClient.GetSetlistByShowDateAsync(DateOnly.Parse(_queryOptions[1])),
+            _ => throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.")
+        };
+
+        _cache.SetlistItems.Data.Add(cacheKey, setlistItems);
 
         return setlistItems;
     }
 
     private async Task<object> Shows()
     {
-        if (_cache.Data.Shows.Count == 0)
+        var isAll = _queryOptions.Length == 0;
+        var cacheKey = isAll ? "all" : _queryOptions[0];
+
+        if (_cache.Shows.Data.TryGetValue(cacheKey, out var shows))
+            return isAll ? shows : shows.SingleOrDefault();
+
+        if (isAll)
         {
-            _cache.Data.Shows = await _apiClient.GetShowsAsync();
-            _cache.Save();
+            shows = await _apiClient.GetShowsAsync();
+            _cache.Shows.Data.Add(cacheKey, shows);
+            return shows;
         }
 
-        if (_queryOptions.Length == 0)
-            return _cache.Data.Shows;
-
-        if (!long.TryParse(_queryOptions[0], out var id))
-            throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[0]}'.");
-
-        var show = _cache.Data.Shows.SingleOrDefault(a => a.Id == id);
-
-        if (show == null)
-        {
-            show = await _apiClient.GetShowByIdAsync(id);
-            if (show != null)
-            {
-                _cache.Data.Shows.Add(show);
-                _cache.Save();
-            }
-        }
-
+        if (!long.TryParse(_queryOptions[1], out var id))
+            throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
+        var show = await _apiClient.GetShowByIdAsync(id);
+        _cache.Shows.Data.Add(cacheKey, [show]);
         return show;
     }
 
     private async Task<object> Songs()
     {
-        if (_cache.Data.Songs.Count == 0)
-        {
-            _cache.Data.Songs = await _apiClient.GetSongsAsync();
-            _cache.Save();
-        }
+        var isAll = _queryOptions.Length == 0;
+        var cacheKey = isAll ? "all" : _queryOptions[0];
 
-        if (_queryOptions.Length == 0)
-            return _cache.Data.Songs;
+        if (_cache.Songs.Data.TryGetValue(cacheKey, out var songs))
+            return isAll ? songs : songs.SingleOrDefault();
+
+        if (isAll)
+        {
+            songs = await _apiClient.GetSongsAsync();
+            _cache.Songs.Data.Add(cacheKey, songs);
+            return songs;
+        }
 
         if (!int.TryParse(_queryOptions[0], out var id))
             throw new PhishNetConsoleException($"Invalid song ID '{_queryOptions[0]}'.");
-
-        var song = _cache.Data.Songs.SingleOrDefault(a => a.Id == id);
-
-        if (song == null)
-        {
-            song = await _apiClient.GetSongByIdAsync(id);
-            if (song != null)
-            {
-                _cache.Data.Songs.Add(song);
-                _cache.Save();
-            }
-        }
-
+        var song = await _apiClient.GetSongByIdAsync(id);
+        _cache.Songs.Data.Add(cacheKey, [song]);
         return song;
     }
 
     private async Task<object> SongDatas()
     {
-        if (_cache.Data.SongDatas.Count == 0)
-        {
-            _cache.Data.SongDatas = await _apiClient.GetSongDatasAsync();
-            _cache.Save();
-        }
+        var isAll = _queryOptions.Length == 0;
+        var cacheKey = isAll ? "all" : _queryOptions[0];
 
-        if (_queryOptions.Length == 0)
-            return _cache.Data.SongDatas;
+        if (_cache.SongDatas.Data.TryGetValue(cacheKey, out var songDatas))
+            return isAll ? songDatas : songDatas.SingleOrDefault();
+
+        if (isAll)
+        {
+            songDatas = await _apiClient.GetSongDatasAsync();
+            _cache.SongDatas.Data.Add(cacheKey, songDatas);
+            return songDatas;
+        }
 
         if (!int.TryParse(_queryOptions[0], out var id))
             throw new PhishNetConsoleException($"Invalid song ID '{_queryOptions[0]}'.");
-
-        var songData = _cache.Data.SongDatas.SingleOrDefault(a => a.SongId == id);
-
-        if (songData == null)
-        {
-            songData = await _apiClient.GetSongDataByIdAsync(id);
-            if (songData != null)
-            {
-                _cache.Data.SongDatas.Add(songData);
-                _cache.Save();
-            }
-        }
-
+        var songData = await _apiClient.GetSongDataByIdAsync(id);
+        _cache.SongDatas.Data.Add(cacheKey, [songData]);
         return songData;
     }
 
@@ -427,64 +278,42 @@ public class App
         if (_queryOptions.Length < 2)
             throw new PhishNetConsoleException("Missing required query value.");
 
-        User user;
+        var cacheKey = $"{_queryOptions[0]}:{_queryOptions[1]}";
 
-        switch (_queryOptions[0])
+        if (_cache.Users.Data.TryGetValue(cacheKey, out var users))
+            return users.SingleOrDefault();
+
+        var user = _queryOptions[0] switch
         {
-            case "uid":
-                if (!long.TryParse(_queryOptions[1], out var userId))
-                    throw new PhishNetConsoleException($"Invalid show ID '{_queryOptions[1]}'.");
-                user = _cache.Data.Users.SingleOrDefault(u => u.Id == userId);
-                if (user == null)
-                {
-                    user = await _apiClient.GetUserByIdAsync(userId);
-                    _cache.Data.Users.Add(user);
-                    _cache.Save();
-                }
-                break;
-            case "username":
-                var username = _queryOptions[1];
-                user = _cache.Data.Users.SingleOrDefault(u => u.Username == username);
-                if (user == null)
-                {
-                    user = await _apiClient.GetUserByUsernameAsync(_queryOptions[1]);
-                    _cache.Data.Users.Add(user);
-                    _cache.Save();
-                }
-                break; 
-            default:
-                throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.");
-        }
+            "uid" => await _apiClient.GetUserByIdAsync(long.Parse(_queryOptions[1])),
+            "username" => await _apiClient.GetUserByUsernameAsync(_queryOptions[1]),
+            _ => throw new PhishNetConsoleException($"Invalid query column '{_queryOptions[0]}'.")
+        };
+
+        _cache.Users.Data.Add(cacheKey, [user]);
 
         return user;
     }
 
     private async Task<object> Venues()
     {
-        if (_cache.Data.Venues.Count == 0)
-        {
-            _cache.Data.Venues = await _apiClient.GetVenuesAsync();
-            _cache.Save();
-        }
+        var isAll = _queryOptions.Length == 0;
+        var cacheKey = isAll ? "all" : _queryOptions[0];
 
-        if (_queryOptions.Length == 0)
-            return _cache.Data.Venues;
+        if (_cache.Venues.Data.TryGetValue(cacheKey, out var venues))
+            return isAll ? venues : venues.SingleOrDefault();
+
+        if (isAll)
+        {
+            venues = await _apiClient.GetVenuesAsync();
+            _cache.Venues.Data.Add(cacheKey, venues);
+            return venues;
+        }
 
         if (!int.TryParse(_queryOptions[0], out var id))
             throw new PhishNetConsoleException($"Invalid venue ID '{_queryOptions[0]}'.");
-
-        var venue = _cache.Data.Venues.SingleOrDefault(a => a.Id == id);
-
-        if (venue == null)
-        {
-            venue = await _apiClient.GetVenueByIdAsync(id);
-            if (venue != null)
-            {
-                _cache.Data.Venues.Add(venue);
-                _cache.Save();
-            }
-        }
-
+        var venue = await _apiClient.GetVenueByIdAsync(id);
+        _cache.Venues.Data.Add(cacheKey, [venue]);
         return venue;
     }
 

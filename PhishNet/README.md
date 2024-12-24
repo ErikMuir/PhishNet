@@ -37,37 +37,37 @@ var setlist = await client.GetSetlistByShowDateAsync(DateOnly.Parse("1998-07-29"
 ### JamChart
 _(NOTE: JamCharts appear to be the same as SetlistItems)_
 
-    GetJamChartsBySongAsync(songSlug)
-    GetJamChartsByShowIdAsync(showId)
-    GetJamChartsByShowDateAsync(showDate)
+    GetJamChartsBySongAsync(string songSlug)
+    GetJamChartsByShowIdAsync(long showId)
+    GetJamChartsByShowDateAsync(DateOnly showDate)
 
 ### Review
-    GetReviewsByUserIdAsync(userId)
-    GetReviewsByUsernameAsync(username)
-    GetReviewsByShowIdAsync(showId)
-    GetReviewsByShowDateAsync(showDate)
+    GetReviewsByUserIdAsync(long userId)
+    GetReviewsByUsernameAsync(string username)
+    GetReviewsByShowIdAsync(long showId)
+    GetReviewsByShowDateAsync(DateOnly showDate)
 
 ### SetlistItem
-    GetPerformancesBySongAsync(songSlug)
-    GetSetlistByShowIdAsync(showId)
-    GetSetlistByShowDateAsync(showDate)
+    GetPerformancesBySongAsync(string songSlug)
+    GetSetlistByShowIdAsync(long showId)
+    GetSetlistByShowDateAsync(DateOnly showDate)
 
 ### Show
     GetShowsAsync()
-    GetShowByIdAsync(showId)
+    GetShowByIdAsync(long showId)
 
 ### Song
     GetSongsAsync()
-    GetSongByIdAsync(songId)
+    GetSongByIdAsync(long songId)
 
 ### SongData
     GetSongDataAsync()
-    GetSongDataByIdAsync(songDataId)
+    GetSongDataByIdAsync(long songId)
 
 ### User
-    GetUserByIdAsync(userId)
-    GetUserByUsernameAsync(username)
+    GetUserByIdAsync(long userId)
+    GetUserByUsernameAsync(string username)
 
 ### Venue
     GetVenuesAsync()
-    GetVenueByIdAsync(venueId)
+    GetVenueByIdAsync(int venueId)
