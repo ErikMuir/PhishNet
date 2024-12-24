@@ -171,9 +171,9 @@ public class PhishNetApiClient
 
     #endregion
 
-    #region SongData
+    #region SongDatas
 
-    public Task<List<SongData>> GetSongDataAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
+    public Task<List<SongData>> GetSongDatasAsync(PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
         var request = new AllResourcesRequest(Resource.SongData, queryParams);
         return GetResourcesAsync<SongData>(request, ct);
