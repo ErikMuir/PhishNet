@@ -1,3 +1,3 @@
 namespace PhishNet.Models;
 
-public class JamChart : SetlistItem { }
+public class JamChart : Setlist { }

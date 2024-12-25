@@ -35,7 +35,7 @@ var setlist = await client.GetSetlistByShowDateAsync(DateOnly.Parse("1998-07-29"
     GetAttendanceByShowDateAsync(DateOnly showDate)
 
 ### JamChart
-_(NOTE: JamCharts appear to be the same as SetlistItems)_
+_(NOTE: JamCharts appear to be the same as Setlists)_
 
     GetJamChartsBySongAsync(string songSlug)
     GetJamChartsByShowIdAsync(long showId)
@@ -47,10 +47,10 @@ _(NOTE: JamCharts appear to be the same as SetlistItems)_
     GetReviewsByShowIdAsync(long showId)
     GetReviewsByShowDateAsync(DateOnly showDate)
 
-### SetlistItem
-    GetPerformancesBySongAsync(string songSlug)
-    GetSetlistByShowIdAsync(long showId)
-    GetSetlistByShowDateAsync(DateOnly showDate)
+### Setlist
+    GetSetlistsBySongAsync(string songSlug)
+    GetSetlistsByShowIdAsync(long showId)
+    GetSetlistsByShowDateAsync(DateOnly showDate)
 
 ### Show
     GetShowsAsync()

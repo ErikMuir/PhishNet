@@ -13,7 +13,7 @@ public class Cache
         Attendances = new ResourceCache<Attendance>();
         JamCharts = new ResourceCache<JamChart>();
         Reviews = new ResourceCache<Review>();
-        SetlistItems = new ResourceCache<SetlistItem>();
+        Setlists = new ResourceCache<Setlist>();
         Shows = new ResourceCache<Show>();
         Songs = new ResourceCache<Song>();
         SongDatas = new ResourceCache<SongData>();
@@ -25,7 +25,7 @@ public class Cache
     public ResourceCache<Attendance> Attendances { get; }
     public ResourceCache<JamChart> JamCharts { get; }
     public ResourceCache<Review> Reviews { get; }
-    public ResourceCache<SetlistItem> SetlistItems { get; }
+    public ResourceCache<Setlist> Setlists { get; }
     public ResourceCache<Show> Shows { get; }
     public ResourceCache<Song> Songs { get; }
     public ResourceCache<SongData> SongDatas { get; }
@@ -38,7 +38,7 @@ public class Cache
         Attendances.Save();
         JamCharts.Save();
         Reviews.Save();
-        SetlistItems.Save();
+        Setlists.Save();
         Shows.Save();
         Songs.Save();
         SongDatas.Save();

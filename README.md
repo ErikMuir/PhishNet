@@ -3,5 +3,5 @@ A C#/.NET wrapper around the [Phish.net](https://phish.net) [API](https://docs.p
 
 ## Todo
 - [x] Convert 404 responses into null objects or empty lists
-- [x] Introduce resource caching
-- [ ] Support cache expiration
+- [x] Console: Introduce resource caching
+- [x] Console: Support cache expiration

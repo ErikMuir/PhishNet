@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace PhishNet.Models;
 
-public class SetlistItem : IPhishNetApiResource
+public class Setlist : IPhishNetApiResource
 {
     [JsonPropertyName("showid")]
     public long ShowId { get; set; }

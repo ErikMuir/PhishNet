@@ -119,22 +119,22 @@ public class PhishNetApiClient
 
     #region Setlists
 
-    public Task<List<SetlistItem>> GetSongPerformancesAsync(string songSlug, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
+    public Task<List<Setlist>> GetSetlistsBySongAsync(string songSlug, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
         var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.Slug, songSlug, queryParams);
-        return QueryResourcesAsync<SetlistItem>(request, ct);
+        return QueryResourcesAsync<Setlist>(request, ct);
     }
 
-    public Task<List<SetlistItem>> GetSetlistByShowIdAsync(long showId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
+    public Task<List<Setlist>> GetSetlistsByShowIdAsync(long showId, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
         var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowId, showId, queryParams);
-        return QueryResourcesAsync<SetlistItem>(request, ct);
+        return QueryResourcesAsync<Setlist>(request, ct);
     }
 
-    public Task<List<SetlistItem>> GetSetlistByShowDateAsync(DateOnly showDate, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
+    public Task<List<Setlist>> GetSetlistsByShowDateAsync(DateOnly showDate, PhishNetApiQueryParams queryParams = null, CancellationToken ct = new())
     {
         var request = new QueryResourcesRequest(Resource.Setlists, QueryableColumn.ShowDate, showDate, queryParams);
-        return QueryResourcesAsync<SetlistItem>(request, ct);
+        return QueryResourcesAsync<Setlist>(request, ct);
     }
 
     #endregion
