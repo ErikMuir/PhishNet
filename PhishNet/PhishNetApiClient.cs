@@ -8,7 +8,7 @@ namespace PhishNet;
 /// <summary>
 /// Provides methods to interact with the Phish.net API.
 /// </summary>
-public class PhishNetApiClient
+public class PhishNetApiClient : IPhishNetApiClient
 {
     private readonly PhishNetApiClientConfig _config;
     private readonly HttpClient _httpClient;
